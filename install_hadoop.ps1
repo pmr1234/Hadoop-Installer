@@ -312,10 +312,7 @@ echo ===========================================
 echo   Stopping Existing Services...
 echo ===========================================
 echo Checking for running Hadoop processes...
-for /f "tokens=1" %%i in ('"%JAVA_HOME%\bin\jps.exe" ^| findstr "NameNode DataNode ResourceManager NodeManager"') do (
-    echo Stopping Hadoop process %%i
-    taskkill /F /PID %%i >nul 2>&1
-)
+powershell -NoProfile -Command "Get-Content -Path env:JAVA_HOME | ForEach-Object { & \"$_\bin\jps.exe\" } | Where-Object { $_ -match 'NameNode|DataNode|ResourceManager|NodeManager' } | ForEach-Object { $id = $_.Split(' ')[0]; Write-Host \"Stopping Hadoop process $id\"; Stop-Process -Id $id -Force -ErrorAction SilentlyContinue }"
 echo Done.
 echo.
 
