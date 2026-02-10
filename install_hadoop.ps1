@@ -312,7 +312,10 @@ echo ===========================================
 echo   Stopping Existing Services...
 echo ===========================================
 echo Checking for running Hadoop processes...
-powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*-Dproc_namenode*' -or $_.CommandLine -like '*-Dproc_datanode*' -or $_.CommandLine -like '*-Dproc_resourcemanager*' -or $_.CommandLine -like '*-Dproc_nodemanager*' } | ForEach-Object { Write-Host 'Stopping ' $_.ProcessId; Stop-Process -Id $_.ProcessId -Force }"
+for /f "tokens=1" %%i in ('"%JAVA_HOME%\bin\jps.exe" ^| findstr "NameNode DataNode ResourceManager NodeManager"') do (
+    echo Stopping Hadoop process %%i
+    taskkill /F /PID %%i >nul 2>&1
+)
 echo Done.
 echo.
 
