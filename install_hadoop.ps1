@@ -43,11 +43,28 @@ function Write-Failure {
 }
 
 try {
-    # 0. Check Administrator Privileges
+    # 0. Check Administrator Privileges & Auto-Elevate
     Write-Status "Checking Administrator privileges..."
     $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
+    
     if (-not $isAdmin) {
-        throw "This script must be run as Administrator to set Environment Variables and create directories."
+        Write-Status "Requesting Administrator privileges... (Please accept UAC prompt)"
+        
+        # Build arguments to restart script as Admin
+        $MyPath = $MyInvocation.MyCommand.Path
+        $ArgsList = "-NoProfile -ExecutionPolicy Bypass -File `"$MyPath`""
+        
+        if ($PSBoundParameters.ContainsKey('JavaHome')) { $ArgsList += " -JavaHome `"$JavaHome`"" }
+        if ($PSBoundParameters.ContainsKey('InstallDir')) { $ArgsList += " -InstallDir `"$InstallDir`"" }
+        if ($PSBoundParameters.ContainsKey('DataDir')) { $ArgsList += " -DataDir `"$DataDir`"" }
+
+        try {
+            Start-Process powershell.exe -ArgumentList $ArgsList -Verb RunAs -ErrorAction Stop
+            exit
+        }
+        catch {
+            throw "Failed to elevate privileges. Please right-click and 'Run as Administrator'."
+        }
     }
     Write-Success "Running as Administrator."
 
@@ -62,8 +79,19 @@ try {
 
     # Validate Java Home
     Write-Status "Validating Java Path..."
+    
+    # Sanitize Input: If user provided ...\bin or ...\java.exe, fix it.
+    if ($JavaHome.EndsWith("\bin") -or $JavaHome.EndsWith("\bin\")) {
+        $JavaHome = (Get-Item $JavaHome).Parent.FullName
+        Write-Status "Adjusted JavaHome to: $JavaHome"
+    }
+    elseif ($JavaHome.EndsWith("java.exe")) {
+        $JavaHome = (Get-Item $JavaHome).Directory.Parent.FullName
+        Write-Status "Adjusted JavaHome to: $JavaHome"
+    }
+
     if (-not (Test-Path "$JavaHome\bin\java.exe")) {
-        throw "Java executable not found at $JavaHome\bin\java.exe. Please verify the path."
+        throw "Java executable not found at '$JavaHome\bin\java.exe'. Please verify you provided the JDK root folder (e.g., C:\Program Files\Java\jdk1.8.0_xxx)."
     }
 
     # Shorten Java Path
@@ -286,6 +314,8 @@ catch {
     Write-Host "`n==========================================" -ForegroundColor Red
     Write-Failure "Installation Failed!"
     Write-Failure "Reason: $_"
+    Write-Failure "Usage Example: .\install_hadoop.ps1 -JavaHome 'C:\Program Files\Java\jdk1.8.0_202'"
     Write-Host "==========================================" -ForegroundColor Red
+    Pause
     exit 1
 }
