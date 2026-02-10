@@ -304,6 +304,18 @@ set HADOOP_HOME=$HadoopHome
 set JAVA_HOME=$JavaHomeShort
 set PATH=%HADOOP_HOME%\bin;%JAVA_HOME%\bin;%PATH%
 
+echo Setting HADOOP_HOME to: %HADOOP_HOME%
+echo Setting JAVA_HOME to:   %JAVA_HOME%
+
+echo.
+echo ===========================================
+echo   Stopping Existing Services...
+echo ===========================================
+echo Checking for running Hadoop processes...
+powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*-Dproc_namenode*' -or $_.CommandLine -like '*-Dproc_datanode*' -or $_.CommandLine -like '*-Dproc_resourcemanager*' -or $_.CommandLine -like '*-Dproc_nodemanager*' } | ForEach-Object { Write-Host 'Stopping ' $_.ProcessId; Stop-Process -Id $_.ProcessId -Force }"
+echo Done.
+echo.
+
 rem Explicitly set CLASSPATH to force Java to find JARs (including TimeLineservice Fix)
 set CLASSPATH=%JAVA_HOME%\lib\tools.jar
 set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\etc\hadoop
