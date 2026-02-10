@@ -275,30 +275,63 @@ set HADOOP_CLASSPATH=%HADOOP_HOME%\share\hadoop\common\*;%HADOOP_HOME%\share\had
         throw "Failed to set environment variables. Ensure you are running as Administrator. Error: $_"
     }
 
-    # 7. Create Start Script
+    # 7. Format NameNode (One-Time)
+    Write-Status "Checking if NameNode needs formatting..."
+    if (-not (Test-Path "$DataDir\namenode\current")) {
+        Write-Status "Formatting NameNode..."
+        
+        # Use full path to avoid path issues
+        $FormatCmd = "cmd /c `"$HadoopHome\bin\hdfs.cmd namenode -format -force`""
+        Invoke-Expression $FormatCmd | Out-Null
+        Write-Success "NameNode formatted."
+    }
+    else {
+        Write-Status "NameNode already formatted. Skipping."
+    }
+
+    # 8. Create Safe Start Script
     $StartScriptPath = "$HadoopHome\start_services.cmd"
     $StartScriptContent = @"
 @echo off
+setlocal enabledelayedexpansion
+
+echo ===========================================
+echo   Starting Hadoop Services
+echo ===========================================
+echo.
+
 set HADOOP_HOME=$HadoopHome
 set JAVA_HOME=$JavaHomeShort
 set PATH=%HADOOP_HOME%\bin;%JAVA_HOME%\bin;%PATH%
 
-echo ===========================================
-echo   Formatting NameNode...
-echo ===========================================
-echo Y | hdfs namenode -format
+rem Explicitly set CLASSPATH to force Java to find JARs (including TimeLineservice Fix)
+set CLASSPATH=%JAVA_HOME%\lib\tools.jar
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\etc\hadoop
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\share\hadoop\common\lib\*
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\share\hadoop\common\*
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\share\hadoop\hdfs
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\share\hadoop\hdfs\lib\*
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\share\hadoop\hdfs\*
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\share\hadoop\yarn
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\share\hadoop\yarn\lib\*
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\share\hadoop\yarn\*
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\share\hadoop\yarn\timelineservice\*
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\share\hadoop\mapreduce\lib\*
+set CLASSPATH=!CLASSPATH!;%HADOOP_HOME%\share\hadoop\mapreduce\*
 
-echo ===========================================
-echo   Starting Services...
-echo ===========================================
-start "NameNode" cmd /k "hdfs namenode"
-start "DataNode" cmd /k "hdfs datanode"
-start "ResourceManager" cmd /k "yarn resourcemanager"
-start "NodeManager" cmd /k "yarn nodemanager"
+echo Starting DFS Services...
+start "NameNode" cmd /k %JAVA_HOME%\bin\java.exe -Dproc_namenode -Xmx1000m -Dhadoop.home.dir=%HADOOP_HOME% -Dhadoop.id.str=%USERNAME% -Dhadoop.root.logger=INFO,console -Dhadoop.policy.file=hadoop-policy.xml -Dhadoop.security.logger=INFO,NullAppender -classpath "%CLASSPATH%" org.apache.hadoop.hdfs.server.namenode.NameNode
+start "DataNode" cmd /k %JAVA_HOME%\bin\java.exe -Dproc_datanode -Xmx1000m -Dhadoop.home.dir=%HADOOP_HOME% -Dhadoop.id.str=%USERNAME% -Dhadoop.root.logger=INFO,console -Dhadoop.policy.file=hadoop-policy.xml -Dhadoop.security.logger=INFO,NullAppender -classpath "%CLASSPATH%" org.apache.hadoop.hdfs.server.datanode.DataNode
 
+echo Starting YARN Services...
+start "ResourceManager" cmd /k %JAVA_HOME%\bin\java.exe -Dproc_resourcemanager -Xmx1000m -Dhadoop.home.dir=%HADOOP_HOME% -Dhadoop.id.str=%USERNAME% -Dhadoop.root.logger=INFO,console -Dhadoop.policy.file=hadoop-policy.xml -Dhadoop.security.logger=INFO,NullAppender -classpath "%CLASSPATH%" org.apache.hadoop.yarn.server.resourcemanager.ResourceManager
+start "NodeManager" cmd /k %JAVA_HOME%\bin\java.exe -Dproc_nodemanager -Xmx1000m -Dhadoop.home.dir=%HADOOP_HOME% -Dhadoop.id.str=%USERNAME% -Dhadoop.root.logger=INFO,console -Dhadoop.policy.file=hadoop-policy.xml -Dhadoop.security.logger=INFO,NullAppender -classpath "%CLASSPATH%" org.apache.hadoop.yarn.server.nodemanager.NodeManager
+
+echo.
 echo ===========================================
 echo   Done! Verify at http://localhost:9870
 echo ===========================================
+echo.
 pause
 "@
     Set-Content -Path $StartScriptPath -Value $StartScriptContent
@@ -307,7 +340,7 @@ pause
     Write-Host "`n==========================================" -ForegroundColor Green
     Write-Success "Hadoop Installation Completed Successfully!"
     Write-Host "==========================================" -ForegroundColor Green
-    Write-Host "Next Step: Run '$StartScriptPath' to format the NameNode and start services." -ForegroundColor Yellow
+    Write-Host "Next Step: Run '$StartScriptPath' to start services." -ForegroundColor Yellow
 
 }
 catch {
