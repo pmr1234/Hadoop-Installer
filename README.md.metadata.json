@@ -1,5 +1,6 @@
 {
   "artifactType": "ARTIFACT_TYPE_OTHER",
-  "summary": "Documentation for the Hadoop Installer repository.",
-  "updatedAt": "2026-02-10T05:48:46.077761400Z"
+  "summary": "Updated README with troubleshooting steps for Access Denied and Port 9000 errors.",
+  "updatedAt": "2026-02-12T09:50:02.105519600Z",
+  "version": "1"
 }

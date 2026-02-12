@@ -167,6 +167,12 @@ try {
         New-Item -ItemType Directory -Force -Path $dir | Out-Null
     }
 
+    # Grant Permissions to Everyone (Fix for Access Denied)
+    Write-Status "Granting full permissions to data directory: $DataDir"
+    icacls "$DataDir" /grant "Everyone:(OI)(CI)F" /t /q
+
+
+
     # Write Config Files
     $DataDirUri = "file:///" + $DataDir.Replace('\', '/')
 
@@ -312,7 +318,11 @@ echo ===========================================
 echo   Stopping Existing Services...
 echo ===========================================
 echo Checking for running Hadoop processes...
-powershell -NoProfile -Command "Get-Content -Path env:JAVA_HOME | ForEach-Object { & \"$_\bin\jps.exe\" } | Where-Object { $_ -match 'NameNode|DataNode|ResourceManager|NodeManager' } | ForEach-Object { $id = $_.Split(' ')[0]; Write-Host \"Stopping Hadoop process $id\"; Stop-Process -Id $id -Force -ErrorAction SilentlyContinue }"
+echo Checking for running Hadoop processes...
+powershell -NoProfile -Command "& \"$env:JAVA_HOME\bin\jps.exe\" | Where-Object { $_ -match 'NameNode|DataNode|ResourceManager|NodeManager' } | ForEach-Object { $id = $_.Split(' ')[0]; Write-Host \"Stopping Hadoop process $id\"; Stop-Process -Id $id -Force -ErrorAction SilentlyContinue }"
+
+echo Checking for processes blocking Port 9000 (NameNode)...
+powershell -NoProfile -Command "`$p = Get-NetTCPConnection -LocalPort 9000 -ErrorAction SilentlyContinue; if (`$p) { Write-Host 'Killing process on port 9000:' `$p.OwningProcess; Stop-Process -Id `$p.OwningProcess -Force }"
 echo Done.
 echo.
 
@@ -344,6 +354,11 @@ echo ===========================================
 echo   Done! Verify at http://localhost:9870
 echo ===========================================
 echo.
+
+echo Launching Web UIs...
+start http://localhost:9870
+start http://localhost:8088
+
 pause
 "@
     Set-Content -Path $StartScriptPath -Value $StartScriptContent

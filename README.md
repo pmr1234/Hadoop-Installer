@@ -37,3 +37,14 @@ The script will:
 After installation, verify that Hadoop is running by visiting:
 - **NameNode UI**: http://localhost:9870
 - **ResourceManager UI**: http://localhost:8088
+
+## Troubleshooting
+
+### "NameNode is not formatted" Error
+If the NameNode service fails to start, run `format_namenode.cmd` in the installation directory.
+
+### "Address already in use: bind" (Port 9000)
+Run `start_services.cmd` again. The script now includes logic to automatically identify and kill processes blocking port 9000.
+
+### "Access is denied" (C:\hadoop-data\...)
+The installer now automatically grants 'Everyone' permissions to the data directory. If this error persists, delete `C:\hadoop-data` and re-run the installer.
