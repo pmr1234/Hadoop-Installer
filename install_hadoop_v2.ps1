@@ -18,7 +18,7 @@ param (
     [string]$InstallDir = "C:\hadoop-3.4.2",
 
     [Parameter(Mandatory = $false)]
-    [string]$DataDir = "C:\hadoop-data",
+    [string]$DataDir = "$env:USERPROFILE\hadoop-data",
 
     [Parameter(Mandatory = $true)]
     [ValidateScript({ Test-Path $_ -PathType Container })]

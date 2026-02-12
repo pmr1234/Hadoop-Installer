@@ -15,13 +15,13 @@ This repository contains a PowerShell script to automate the installation and co
 
 ## Usage
 
-1. **Clone this repository** (or download `install_hadoop.ps1`).
+1. **Clone this repository** (or download `install_hadoop_v2.ps1`).
 2. Open **PowerShell as Administrator**.
 3. Run the following command:
 
 ```powershell
 Set-ExecutionPolicy Unrestricted -Scope Process
-.\install_hadoop.ps1 -JavaHome "C:\Program Files\Java\jdk1.8.0_202"
+.\install_hadoop_v2.ps1 -JavaHome "C:\Program Files\Java\jdk1.8.0_202"
 ```
 
 *(Replace the path with your actual JDK 8 installation path)*
@@ -46,5 +46,5 @@ If the NameNode service fails to start, run `format_namenode.cmd` in the install
 ### "Address already in use: bind" (Port 9000)
 Run `start_services.cmd` again. The script now includes logic to automatically identify and kill processes blocking port 9000.
 
-### "Access is denied" (C:\hadoop-data\...)
-The installer now automatically grants 'Everyone' permissions to the data directory. If this error persists, delete `C:\hadoop-data` and re-run the installer.
+### "Access is denied" (...\hadoop-data\...)
+The installer uses your User Profile (`%USERPROFILE%\hadoop-data`) to avoid permission issues. If errors persist, delete the `hadoop-data` folder and re-run.
