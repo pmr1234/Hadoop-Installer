@@ -168,7 +168,8 @@ try {
     }
 
     # Grant Permissions to Everyone (Fix for Access Denied)
-    Write-Status "Granting full permissions to data directory: $DataDir"
+    Write-Status "Resetting and Granting permissions to data directory: $DataDir"
+    icacls "$DataDir" /reset /t /q
     icacls "$DataDir" /grant "Everyone:(OI)(CI)F" /t /q
     icacls "$DataDir" /grant "Users:(OI)(CI)F" /t /q
     icacls "$DataDir" /grant "Authenticated Users:(OI)(CI)F" /t /q
@@ -297,7 +298,31 @@ set HADOOP_CLASSPATH=%HADOOP_HOME%\share\hadoop\common\*;%HADOOP_HOME%\share\had
         Write-Status "NameNode already formatted. Skipping."
     }
 
-    # 8. Create Safe Start Script
+    # 8a. Create Stop Services Helper Script (PowerShell)
+    $StopScriptPath = "$HadoopHome\stop_services.ps1"
+    $StopScriptContent = @"
+`$jh = `$env:JAVA_HOME
+if (`$jh.EndsWith('\bin')) { `$jh = `$jh.Substring(0, `$jh.Length - 4) }
+Write-Host "Java Home detected: `$jh"
+
+Write-Host "Checking for running Hadoop processes..."
+& "`$jh\bin\jps.exe" | Where-Object { `$_ -match 'NameNode|DataNode|ResourceManager|NodeManager' } | ForEach-Object { 
+    `$id = `$_ .Split(' ')[0]
+    Write-Host "Stopping Hadoop process `$id"
+    Stop-Process -Id `$id -Force -ErrorAction SilentlyContinue 
+}
+
+Write-Host "Checking for processes blocking Port 9000..."
+`$p = Get-NetTCPConnection -LocalPort 9000 -ErrorAction SilentlyContinue
+if (`$p) { 
+    Write-Host "Killing process on port 9000: `$(`$p.OwningProcess)"
+    Stop-Process -Id `$p.OwningProcess -Force 
+}
+"@
+    Set-Content -Path $StopScriptPath -Value $StopScriptContent
+    Write-Success "Stop helper script created at $StopScriptPath"
+
+    # 8b. Create Safe Start Script
     $StartScriptPath = "$HadoopHome\start_services.cmd"
     $StartScriptContent = @"
 @echo off
@@ -319,12 +344,7 @@ echo.
 echo ===========================================
 echo   Stopping Existing Services...
 echo ===========================================
-echo Checking for running Hadoop processes...
-echo Checking for running Hadoop processes...
-powershell -NoProfile -Command "`$jh = `$env:JAVA_HOME; if (`$jh.EndsWith('\bin')) { `$jh = `$jh.Substring(0, `$jh.Length - 4) }; & \`"`$jh\bin\jps.exe\`" | Where-Object { `$_ -match 'NameNode|DataNode|ResourceManager|NodeManager' } | ForEach-Object { `$id = `$_ .Split(' ')[0]; Write-Host \"Stopping Hadoop process `$id\"; Stop-Process -Id `$id -Force -ErrorAction SilentlyContinue }"
-
-echo Checking for processes blocking Port 9000 (NameNode)...
-powershell -NoProfile -Command "`$p = Get-NetTCPConnection -LocalPort 9000 -ErrorAction SilentlyContinue; if (`$p) { Write-Host 'Killing process on port 9000:' `$p.OwningProcess; Stop-Process -Id `$p.OwningProcess -Force }"
+powershell -ExecutionPolicy Bypass -File "%HADOOP_HOME%\stop_services.ps1"
 echo Done.
 echo.
 
