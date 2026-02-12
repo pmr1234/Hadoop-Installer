@@ -156,6 +156,12 @@ try {
     Write-Status "Configuring XML files..."
     
     # Create Data Directories
+    # Force delete DataNode directory to ensure clean permissions (Fix for DiskErrorException)
+    if (Test-Path "$DataDir\datanode") { 
+        Write-Status "Removing existing DataNode directory to fix permissions..."
+        Remove-Item "$DataDir\datanode" -Recurse -Force -ErrorAction SilentlyContinue 
+    }
+
     $DirsToCreate = @(
         "$DataDir\namenode", 
         "$DataDir\datanode", 
@@ -307,7 +313,7 @@ Write-Host "Java Home detected: `$jh"
 
 Write-Host "Checking for running Hadoop processes..."
 & "`$jh\bin\jps.exe" | Where-Object { `$_ -match 'NameNode|DataNode|ResourceManager|NodeManager' } | ForEach-Object { 
-    `$id = `$_ .Split(' ')[0]
+    `$id = `$_.Split(' ')[0]
     Write-Host "Stopping Hadoop process `$id"
     Stop-Process -Id `$id -Force -ErrorAction SilentlyContinue 
 }
