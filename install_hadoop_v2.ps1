@@ -365,6 +365,10 @@ pause
     Write-Success "Startup script created at $StartScriptPath"
 
     # 9. Create Desktop Shortcut (For All Users)
+    # Remove old user-specific shortcut if exists
+    $UserDesktop = [Environment]::GetFolderPath("Desktop")
+    if (Test-Path "$UserDesktop\Run Hadoop.cmd") { Remove-Item "$UserDesktop\Run Hadoop.cmd" -Force }
+
     $DesktopPath = [Environment]::GetFolderPath("CommonDesktopDirectory")
     $ShortcutFile = "$DesktopPath\Run Hadoop.cmd"
     $ShortcutContent = "call `"$StartScriptPath`""
