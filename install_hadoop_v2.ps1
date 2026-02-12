@@ -364,12 +364,12 @@ pause
     Set-Content -Path $StartScriptPath -Value $StartScriptContent
     Write-Success "Startup script created at $StartScriptPath"
 
-    # 9. Create Desktop Shortcut
-    $DesktopPath = [Environment]::GetFolderPath("Desktop")
+    # 9. Create Desktop Shortcut (For All Users)
+    $DesktopPath = [Environment]::GetFolderPath("CommonDesktopDirectory")
     $ShortcutFile = "$DesktopPath\Run Hadoop.cmd"
     $ShortcutContent = "call `"$StartScriptPath`""
     Set-Content -Path $ShortcutFile -Value $ShortcutContent
-    Write-Success "Desktop shortcut created: $ShortcutFile"
+    Write-Success "Desktop shortcut created for ALL USERS: $ShortcutFile"
 
     Write-Host "`n==========================================" -ForegroundColor Green
     Write-Success "Hadoop Installation Completed Successfully!"
