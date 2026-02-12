@@ -170,6 +170,8 @@ try {
     # Grant Permissions to Everyone (Fix for Access Denied)
     Write-Status "Granting full permissions to data directory: $DataDir"
     icacls "$DataDir" /grant "Everyone:(OI)(CI)F" /t /q
+    icacls "$DataDir" /grant "Users:(OI)(CI)F" /t /q
+    icacls "$DataDir" /grant "Authenticated Users:(OI)(CI)F" /t /q
 
 
 
@@ -319,7 +321,7 @@ echo   Stopping Existing Services...
 echo ===========================================
 echo Checking for running Hadoop processes...
 echo Checking for running Hadoop processes...
-powershell -NoProfile -Command "$jh = $env:JAVA_HOME; if ($jh.EndsWith('\bin')) { $jh = $jh.Substring(0, $jh.Length - 4) }; & \"$jh\bin\jps.exe\" | Where-Object { $_ -match 'NameNode|DataNode|ResourceManager|NodeManager' } | ForEach-Object { $id = $_.Split(' ')[0]; Write-Host \"Stopping Hadoop process $id\"; Stop-Process -Id $id -Force -ErrorAction SilentlyContinue }"
+powershell -NoProfile -Command "`$jh = `$env:JAVA_HOME; if (`$jh.EndsWith('\bin')) { `$jh = `$jh.Substring(0, `$jh.Length - 4) }; & \`"`$jh\bin\jps.exe\`" | Where-Object { `$_ -match 'NameNode|DataNode|ResourceManager|NodeManager' } | ForEach-Object { `$id = `$_ .Split(' ')[0]; Write-Host \"Stopping Hadoop process `$id\"; Stop-Process -Id `$id -Force -ErrorAction SilentlyContinue }"
 
 echo Checking for processes blocking Port 9000 (NameNode)...
 powershell -NoProfile -Command "`$p = Get-NetTCPConnection -LocalPort 9000 -ErrorAction SilentlyContinue; if (`$p) { Write-Host 'Killing process on port 9000:' `$p.OwningProcess; Stop-Process -Id `$p.OwningProcess -Force }"
