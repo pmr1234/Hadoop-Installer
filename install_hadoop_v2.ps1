@@ -309,6 +309,11 @@ set HADOOP_CLASSPATH=%HADOOP_HOME%\share\hadoop\common\*;%HADOOP_HOME%\share\had
         Write-Status "NameNode already formatted. Skipping."
     }
 
+    # Re-Grant Permissions to DataDir (Crucial: Fix for Access Denied on 'VERSION' file created by Format)
+    Write-Status "Ensuring complete access to Data Directory (Post-Format via icacls)..."
+    icacls "$DataDir" /grant "Everyone:(OI)(CI)F" /t /q
+    icacls "$DataDir" /grant "Users:(OI)(CI)F" /t /q
+
     # 8a. Create Stop Services Helper Script (PowerShell)
     $StopScriptPath = "$HadoopHome\stop_services.ps1"
     $StopScriptContent = @"
