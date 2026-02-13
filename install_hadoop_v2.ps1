@@ -18,7 +18,7 @@ param (
     [string]$InstallDir = "C:\hadoop-3.4.2",
 
     [Parameter(Mandatory = $false)]
-    [string]$DataDir = "$env:USERPROFILE\hadoop-data",
+    [string]$DataDir = "$env:PUBLIC\hadoop-data",
 
     [Parameter(Mandatory = $true)]
     [ValidateScript({ Test-Path $_ -PathType Container })]
@@ -109,6 +109,11 @@ try {
     if (-not (Test-Path $HadoopHome)) {
         Write-Status "Creating Install Directory: $InstallDir"
         New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
+        
+        Write-Status "Using Data Directory: $DataDir"
+        if ($DataDir -eq "C:\hadoop-data") {
+            Write-Warning "Using C:\hadoop-data is not recommended due to permission issues. Consider using User Profile."
+        }
 
         Write-Status "Downloading Hadoop 3.4.2 from $HadoopUrl..."
         try {

@@ -15,7 +15,7 @@ This repository contains a PowerShell script to automate the installation and co
 
 ## Usage
 
-1. **Clone this repository** (or download [install_hadoop_v2.ps1](file:///C:/Users/Student.DESKTOP-OJ9FGK5/.gemini/antigravity/brain/4fbbd003-4845-4952-be1e-f23c98cbd42c/Hadoop-Installer/install_hadoop_v2.ps1)).
+1. **Clone this repository** (or download `install_hadoop_v2.ps1`).
 2. Open **PowerShell as Administrator**.
 3. Run the following command:
 
@@ -46,5 +46,5 @@ If the NameNode service fails to start, run [format_namenode.cmd](file:///F:/had
 ### "Address already in use: bind" (Port 9000)
 Run [start_services.cmd](file:///F:/hadoop-3.4.2/hadoop-3.4.2/start_services.cmd) again. The script now includes logic to automatically identify and kill processes blocking port 9000.
 
-### "Access is denied" (...\hadoop-data\...)
-The installer uses the Public Profile (`C:\Users\Public\hadoop-data`) to ensure all users can access the data. If errors persist, delete the `hadoop-data` folder in Public Documents and re-run.
+### "Access is denied" (C:\hadoop-data\...)
+The installer now automatically grants 'Everyone' permissions to the data directory. If this error persists, delete `C:\hadoop-data` and re-run the installer.

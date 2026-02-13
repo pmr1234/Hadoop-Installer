@@ -47,4 +47,4 @@ If the NameNode service fails to start, run [format_namenode.cmd](file:///F:/had
 Run [start_services.cmd](file:///F:/hadoop-3.4.2/hadoop-3.4.2/start_services.cmd) again. The script now includes logic to automatically identify and kill processes blocking port 9000.
 
 ### "Access is denied" (...\hadoop-data\...)
-The installer uses the Public Profile (`C:\Users\Public\hadoop-data`) to ensure all users can access the data. If errors persist, delete the `hadoop-data` folder in Public Documents and re-run.
+The installer uses your User Profile (`%USERPROFILE%\hadoop-data`) to avoid permission issues. If errors persist, delete the `hadoop-data` folder and re-run.
