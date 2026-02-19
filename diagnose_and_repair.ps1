@@ -14,7 +14,10 @@
 
 param (
     [Parameter(Mandatory = $false)]
-    [string]$JavaHome
+    [string]$JavaHome,
+    
+    [Parameter(Mandatory = $false)]
+    [switch]$ForceRelocate
 )
 
 $ErrorActionPreference = "Stop"
@@ -110,14 +113,19 @@ Write-Status "Running Access Test on: $TestTarget"
 & "$JavaHome\bin\java.exe" DiskTest "$TestTarget"
 $result = $LASTEXITCODE
 
-if ($result -eq 0) {
+if ($result -eq 0 -and -not $ForceRelocate) {
     Write-Success "Java reports this directory is FULLY ACCESSIBLE."
-    Write-Host "If Hadoop still fails, the issue is likely not permissions but 'Safe Mode' or 'ClusterID mismatch'."
-    Write-Host "Try: Formatting the NameNode again."
+    Write-Host "If Hadoop still fails, likely the 'Student' user cannot access what 'Admin' can."
+    Write-Host "Re-run this script with -ForceRelocate to move data to C:\hadoop-data (Recommended)."
 }
 else {
-    Write-ErrorMsg "Java reports ACCESS DENIED (Exit Code: $result)."
-    Write-Status "This confirms the 'Public' folder overlay is confusing Java."
+    if ($ForceRelocate) {
+        Write-Status "Force Relocation Requested."
+    }
+    else {
+        Write-ErrorMsg "Java reports ACCESS DENIED (Exit Code: $result)."
+    }
+    Write-Status "Fixing by Relocating Data Directory..."
     
     # 6. AUTO-FIX: Relocate to C:\hadoop-data (Simpler Path)
     Write-Host "`n[AUTO-FIX] Relocating Data Directory to C:\hadoop-data..." -ForegroundColor Yellow
