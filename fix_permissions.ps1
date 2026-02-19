@@ -37,6 +37,12 @@ catch {
     Write-Host "Could not read ACL (Access Denied)" -ForegroundColor Red
 }
 
+Write-Status "Clearing Read-Only attributes..."
+attrib -r "$DataDir" /s /d
+if (Test-Path "$DataDir\*") {
+    attrib -r "$DataDir\*" /s /d
+}
+
 Write-Status "Forcefully resetting permissions..."
 
 # 1. Reset Inheritance
