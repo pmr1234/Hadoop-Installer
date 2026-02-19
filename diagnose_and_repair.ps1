@@ -9,7 +9,13 @@
     4. Updates all Hadoop XML configs to point to the new location.
 
     Usage: Run as Administrator.
+    Example: .\diagnose_and_repair.ps1 -JavaHome "C:\Program Files\Java\jdk1.8.0_202"
 #>
+
+param (
+    [Parameter(Mandatory = $false)]
+    [string]$JavaHome
+)
 
 $ErrorActionPreference = "Stop"
 $JavaSrc = @"
@@ -56,9 +62,21 @@ if (-not $isAdmin) {
 }
 
 # 2. Find Java
-$JavaHome = $env:JAVA_HOME
+if (-not $JavaHome) {
+    $JavaHome = $env:JAVA_HOME
+}
+
+# Sanitize Input: If user provided ...\bin or ...\java.exe, fix it.
+if ($JavaHome.EndsWith("\bin") -or $JavaHome.EndsWith("\bin\")) {
+    $JavaHome = (Get-Item $JavaHome).Parent.FullName
+}
+elseif ($JavaHome.EndsWith("java.exe")) {
+    $JavaHome = (Get-Item $JavaHome).Directory.Parent.FullName
+}
+
 if (-not $JavaHome -or -not (Test-Path "$JavaHome\bin\javac.exe")) {
-    Write-ErrorMsg "JDK not found. Ensure JAVA_HOME is set and points to a JDK (not JRE)."
+    Write-ErrorMsg "JDK not found at: $JavaHome"
+    Write-ErrorMsg "Please provide -JavaHome parameter pointing to your JDK."
     exit 1
 }
 
