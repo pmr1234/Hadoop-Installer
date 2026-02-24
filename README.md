@@ -47,5 +47,5 @@ If the NameNode service fails to start, run `format_namenode.cmd` in the install
 Run `start_services.cmd` again. The script now includes logic to automatically identify and kill processes blocking port 9000.
 
 ### "Access is denied" or "DiskErrorException" (...\hadoop-data\...)
-The installer uses the Public Profile (`C:\Users\Public\hadoop-data`) to ensure all users can access the data. 
-**Fix:** Run the latest version of `install_hadoop_v2.ps1`. It automatically resets permissions on these folders to ensure the `Student` user can read files created by the `Administrator`.
+The installer now uses `C:\hadoop-data` by default. This avoids complex Windows User Profile permission issues that occur when Java (running as a standard user) tries to read files created by the Administrator installer.
+**Fix:** Ensure you are using the latest version of `install_hadoop_v2.ps1` which defaults to this safer path, and run it as Administrator.
