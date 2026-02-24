@@ -18,7 +18,7 @@ if (-not $isAdmin) {
     exit 1
 }
 
-$DataDir = "$env:PUBLIC\hadoop-data"
+$DataDir = "C:\hadoop-data"
 
 Write-Status "Targeting Data Directory: $DataDir"
 
