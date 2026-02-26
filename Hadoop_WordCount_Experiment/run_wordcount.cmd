@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 echo ===========================================
-echo   Hadoop WordCount & Frequency Runner
+echo   Hadoop WordCount and Frequency Runner
 echo ===========================================
 echo.
 
