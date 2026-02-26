@@ -53,3 +53,32 @@ orange	2
 2	orange grape banana 
 3	apple 
 ```
+
+## Advanced Usage
+
+### Uploading Other Files to Hadoop (CSV, XLS, MP4, etc.)
+Hadoop Distributed File System (HDFS) does not care about file extensions; it treats all files as raw bytes. You can upload **any type of file** to Hadoop the exact same way you upload `.txt` files using the `-put` or `-copyFromLocal` command:
+
+```bash
+# Upload a CSV file
+hdfs dfs -put C:\my_data.csv /user/Student/input/
+
+# Upload an Excel file
+hdfs dfs -put C:\finances.xls /user/Student/input/
+```
+Once uploaded, your MapReduce Java or Python programs can simply be coded to parse comma-separated or tab-separated data instead of raw text.
+
+### Monitoring Hadoop via the Web GUIs
+Hadoop automatically hosts real-time monitoring dashboards on your localhost when the daemons are running.
+
+#### **A. NameNode UI / HDFS Dashboard (`http://localhost:9870`)**
+This is the "Hard Drive" monitoring interface.
+* **Browse Files Visually**: If you click **Utilities > Browse the file system** at the top right, it will open a file explorer. You can navigate through HDFS, create new folders, and even **upload/download files directly through the browser** without using the command line!
+* **Monitor Storage**: You can see exactly how much disk space HDFS is currently using vs your Configured Capacity.
+* **Check DataNode Health**: You can verify if your DataNodes are active or if any have crashed by clicking the "Datanodes" tab.
+
+#### **B. ResourceManager UI / YARN Dashboard (`http://localhost:8088`)**
+This is the "Task Manager" interface.
+* **Track MapReduce Jobs**: Every time you run `hadoop jar ...`, a new job will appear in this list. 
+* **Check Status and Progress**: You can see if an application is `ACCEPTED`, `RUNNING`, `FINISHED`, or `FAILED`.
+* **Read Error Logs**: If a MapReduce job fails, you can click its `ID` in the list to look at exactly which Java exception or memory issue caused it to crash, line-by-line.
