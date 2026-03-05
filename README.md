@@ -47,5 +47,61 @@ If the NameNode service fails to start, run `format_namenode.cmd` in the install
 Run `start_services.cmd` again. The script now includes logic to automatically identify and kill processes blocking port 9000.
 
 ### "Access is denied" or "DiskErrorException" (...\hadoop-data\...)
+✅ Fix (Step-by-Step)
+1️⃣ Stop Hadoop (if anything is running)
+Close the current command window.
+
+2️⃣ Delete the Hadoop data folder
+Go to:
+
+C:\hadoop-data
+Delete the entire folder C:\hadoop-data
+
+You can do it from PowerShell:
+
+Remove-Item -Recurse -Force C:\hadoop-data
+3️⃣ Recreate the directories manually
+Create the folders again:
+
+C:\hadoop-data
+C:\hadoop-data\namenode
+C:\hadoop-data\datanode
+PowerShell command:
+
+mkdir C:\hadoop-data
+mkdir C:\hadoop-data\namenode
+mkdir C:\hadoop-data\datanode
+4️⃣ Give full permission
+Right click:
+
+C:\hadoop-data
+Then:
+
+Properties → Security → Edit → Full Control
+Give Full Control to:
+
+Users
+Everyone
+Apply and OK.
+
+5️⃣ Format the NameNode
+Open PowerShell as Administrator and run:
+
+hdfs namenode -format
+You should see something like:
+
+Storage directory C:\hadoop-data\namenode has been successfully formatted
+6️⃣ Start Hadoop
+Run:
+
+start-dfs.cmd
+Then check processes:
+
+jps
+You should see:
+
+NameNode
+DataNode
+SecondaryNameNode
 The installer now uses `C:\hadoop-data` by default. This avoids complex Windows User Profile permission issues that occur when Java (running as a standard user) tries to read files created by the Administrator installer.
 **Fix:** Ensure you are using the latest version of `install_hadoop_v2.ps1` which defaults to this safer path, and run it as Administrator.
