@@ -2,6 +2,13 @@
 
 This folder implements "Experiment 3: Working with Hive" to orchestrate database creation, data loading, and MapReduce HiveQL metrics querying.
 
+## 📦 How to Clone this Specific Experiment
+To prevent different experiments from getting mixed up, this repository is organized using **Git Tags**. You can download *only* this exact Hive experiment code by running:
+```bash
+git clone --branch v3.0-hive https://github.com/pmr1234/Hadoop-Installer.git
+```
+*(If you need the earlier MapReduce WordCount experiment, just change `v3.0-hive` to `v2.0-wordcount`!)*
+
 ## Requirements
 Unlike Java MapReduce, Apache Hive 3.1.3 relies heavily on legacy JVM frameworks and requires an explicitly managed Classpath to run natively on Windows without Git Bash/Cygwin. 
 
