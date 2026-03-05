@@ -26,6 +26,13 @@ run_hive.cmd
 4. Orchestrates the `hive_queries.hql` file to parse `students.csv` into HDFS.
 5. Prints the analytical MapReduce output of the `.csv` file.
 
+### Interactive Usage (Manual Testing)
+If you want to quickly drop into a live database to write **DDL, DML, or DQL** queries yourself (such as `SELECT *`, `JOIN`, or `DROP`), use the shell script provided:
+```bat
+run_hive_shell.cmd
+```
+This bypasses the automation and immediately opens an interactive `hive>` prompt inside your terminal!
+
 ## Uses of Apache Hive
 Apache Hive is primarily used for Data Warehousing and Data Engineering on top of Hadoop. Its uses include:
 1. **Data Summarization & Analysis:** Executing complex analytical queries on massive datasets stored in HDFS.
