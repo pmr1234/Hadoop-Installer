@@ -33,15 +33,42 @@ run_hive_shell.cmd
 ```
 This bypasses the automation and immediately opens an interactive `hive>` prompt inside your terminal!
 
-## Uses of Apache Hive
+## 🚀 Uses of Apache Hive
 Apache Hive is primarily used for Data Warehousing and Data Engineering on top of Hadoop. Its uses include:
-1. **Data Summarization & Analysis:** Executing complex analytical queries on massive datasets stored in HDFS.
-2. **ETL (Extract, Transform, Load):** Transforming raw unstructured data into structured tables for business intelligence tools.
-3. **Ad-hoc Querying:** Allowing analysts and data scientists to query Big Data using familiar SQL syntax (HiveQL) without needing to write Java MapReduce code.
+1. 📊 **Data Summarization & Analysis:** Executing complex analytical queries on massive datasets stored in HDFS.
+2. 🔄 **ETL (Extract, Transform, Load):** Transforming raw unstructured data (like `students.csv`) into structured tables for business intelligence tools.
+3. 🕵️ **Ad-hoc Querying:** Allowing analysts to query Big Data using familiar SQL syntax (HiveQL) without needing to write complex Java MapReduce code!
 
-## Key Hive Operations
-Hive provides various SQL-like operations to manage and analyze data:
-1. **DDL (Data Definition Language):** Operations like `CREATE DATABASE`, `CREATE TABLE`, `ALTER TABLE`, and `DROP TABLE` to define the metadata schemas.
-2. **DML (Data Manipulation Language):** Operations like `LOAD DATA`, `INSERT INTO`, and `UPDATE` to populate tables with data from local file systems or HDFS.
-3. **DQL (Data Query Language):** Powerful analytical operations like `SELECT`, `GROUP BY`, `ORDER BY`, `JOIN`, and Aggregation functions (`COUNT`, `AVG`, `MAX`, `MIN`) to derive insights from data.
-4. **Partitioning & Bucketing:** Advanced operations to split large datasets into manageable directories for optimized query performance.
+---
+
+## 🛠️ Key Hive Operations & Commands (With Examples!)
+Hive provides various SQL-like operations to manage and analyze your data. Here is a clear breakdown of the commands we used in this experiment:
+
+### 1. 🏗️ DDL (Data Definition Language)
+These commands are used to define the metadata schemas (the blueprints) of your databases and tables.
+- **`CREATE DATABASE college;`** 
+  *What it does:* Creates a new folder structure in HDFS to logically group your tables together.
+- **`USE college;`**
+  *What it does:* Tells Hive that all subsequent commands should act inside the `college` database.
+- **`CREATE TABLE students (...);`**
+  *What it does:* Creates the schema for your table, specifying the column names and their data types (like `INT` and `STRING`). It also tells Hive how to parse the data (e.g., separating columns by commas).
+- **`DROP TABLE students;`**
+  *What it does:* Deletes the table. *Warning:* If it's an internal table, this deletes the underlying data from HDFS too!
+
+### 2. 🚚 DML (Data Manipulation Language)
+These commands are used to move and manipulate the actual raw data files.
+- **`LOAD DATA LOCAL INPATH 'students.csv' OVERWRITE INTO TABLE students;`**
+  *What it does:* Takes your local `students.csv` file from your Windows drive and safely uploads it directly into the correct HDFS folder that belongs to the `students` table. 
+
+### 3. 🔍 DQL (Data Query Language)
+These are the powerful analytical commands used to extract insights from your data! Hive converts these directly into MapReduce jobs:
+- **`SELECT * FROM students;`**
+  *What it does:* Retrieves every single row and column from your table so you can view the entire dataset.
+- **`SELECT COUNT(*) FROM students;`**
+  *What it does:* Counts the total number of rows (students) inside your table. 
+- **`SELECT AVG(marks) FROM students;`**
+  *What it does:* Calculates the numerical average of all the values in the `marks` column.
+- **`SELECT dept, COUNT(*) FROM students GROUP BY dept;`**
+  *What it does:* Groups the rows by their `dept` (Department) column, and then individually counts how many students are in each specific department!
+- **`SELECT name, marks FROM students WHERE marks > 80;`**
+  *What it does:* Filters the table to only show students who scored higher than 80 marks.
