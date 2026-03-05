@@ -72,3 +72,50 @@ These are the powerful analytical commands used to extract insights from your da
   *What it does:* Groups the rows by their `dept` (Department) column, and then individually counts how many students are in each specific department!
 - **`SELECT name, marks FROM students WHERE marks > 80;`**
   *What it does:* Filters the table to only show students who scored higher than 80 marks.
+
+---
+
+## 📁 File Structure & Script Explanations
+Here is what each file in this folder actually does:
+- 📜 **`hive_queries.hql`**: Contains the actual HiveQL (SQL-like) queries that create the tables, load the CSV data, and perform the data analytics.
+- ⚙️ **`init_hdfs.cmd`**: Bootstraps the backend HDFS directories (`/user/hive/warehouse` and `/tmp/hive`) so Hive has a place to securely store its databases.
+- 🚀 **`run_hive.cmd`**: The main automated execution wrapper. It configures the Java classpaths, intelligently initializes the Derby database, and seamlessly executes `hive_queries.hql`.
+- 🛠️ **`run_hive_native.cmd`**: A specialized debugging script used to cleanly wipe, format, and test the Derby Metastore if it gets corrupted.
+- 💻 **`run_hive_shell.cmd`**: Launches the interactive `hive>` CLI so you can type SQL queries manually in real-time!
+- 🧰 **`setup_hive.cmd`**: A helper script utilized during the initial Hive installation and environment configuration.
+
+---
+
+## 🌱 How to Create a New Database and a New HQL Script
+If you want to move beyond the `college` experiment and create your own custom project, follow these simple steps:
+
+### Part 1: Creating a New Database
+You have two easy ways to create a new database:
+
+**Option A: Interactive Shell (Manual)**
+1. Double-click `run_hive_shell.cmd` to open the interactive `hive>` prompt.
+2. Type `CREATE DATABASE my_new_project;` and press Enter.
+3. Type `USE my_new_project;` to switch into it, and start writing your `CREATE TABLE` commands!
+
+**Option B: Automated Script (HQL)**
+You can write the database generation command directly into an `.hql` file instead (see Part 2 below).
+
+### Part 2: Crafting a New Automated HQL Script
+If you want to completely automate a new sequence of queries (just like we did for this assignment), you can write a new script:
+
+1. Create a new file (e.g., `my_queries.hql`) using a text editor like VS Code or Notepad.
+2. Add your custom SQL queries to the file:
+```sql
+CREATE DATABASE IF NOT EXISTS my_new_project;
+USE my_new_project;
+
+CREATE TABLE employee (id INT, job STRING);
+-- Add more SQL commands here...
+```
+
+**To run your custom script:**
+1. Open the existing `run_hive.cmd` wrapper script in your text editor.
+2. Scroll to the very bottom where it says:
+   `java -cp "%CP%" org.apache.hadoop.hive.cli.CliDriver -f hive_queries.hql`
+3. Change `hive_queries.hql` to `my_queries.hql` and save the script!
+4. Double-click `run_hive.cmd` and watch your custom queries execute autonomously!
