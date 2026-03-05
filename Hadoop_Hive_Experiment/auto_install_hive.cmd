@@ -5,9 +5,10 @@ echo ==============================================================
 echo       Fully Automated Apache Hive 3.1.3 Installer (Windows)
 echo ==============================================================
 
-set "HIVE_DEST=F:\"
-set "HIVE_HOME=F:\apache-hive-3.1.3-bin"
-set "HADOOP_HOME=F:\hadoop-3.4.2\hadoop-3.4.2"
+set "DRIVE=%~d0"
+if not defined HIVE_DEST set "HIVE_DEST=%DRIVE%\"
+if not defined HIVE_HOME set "HIVE_HOME=%DRIVE%\apache-hive-3.1.3-bin"
+if not defined HADOOP_HOME set "HADOOP_HOME=%DRIVE%\hadoop-3.4.2\hadoop-3.4.2"
 set "HIVE_TAR=apache-hive-3.1.3-bin.tar.gz"
 
 echo.

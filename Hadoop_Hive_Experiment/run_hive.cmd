@@ -8,9 +8,10 @@ echo   Hadoop Hive Analytical Query Runner
 echo ===========================================
 
 rem --- Set Paths ---
-set "HADOOP_HOME=F:\hadoop-3.4.2\hadoop-3.4.2"
-set "HIVE_HOME=F:\apache-hive-3.1.3-bin"
-set "JAVA_HOME=C:\Progra~1\Java\jdk1.8.0_481"
+set "DRIVE=%~d0"
+if not defined HADOOP_HOME set "HADOOP_HOME=%DRIVE%\hadoop-3.4.2\hadoop-3.4.2"
+if not defined HIVE_HOME set "HIVE_HOME=%DRIVE%\apache-hive-3.1.3-bin"
+if not defined JAVA_HOME set "JAVA_HOME=C:\Progra~1\Java\jdk1.8.0_481"
 set "HADOOP_COMMON_HOME=%HADOOP_HOME%"
 set "HADOOP_HDFS_HOME=%HADOOP_HOME%"
 set "HADOOP_MAPRED_HOME=%HADOOP_HOME%"
