@@ -17,7 +17,23 @@ Unlike Java MapReduce, Apache Hive 3.1.3 relies heavily on legacy JVM frameworks
 - Apache Hive 3.1.3 Extracted to `F:\apache-hive-3.1.3-bin`  
 - *Note:* Hive 3 requires `commons-collections-3.2.2.jar` to be manually added to its `lib/` directory if running against modern Hadoop distributions.
 
-## How to Run
+## 🍼 Automated Installation (Brand New Machine)
+If you are cloning this repository onto a brand new computer that *does not* have Apache Hive installed yet, you don't need to do any manual work! Simply run the installer script:
+```bat
+auto_install_hive.cmd
+```
+**This script autonomously performs the following 5 critical steps:**
+1. Securely downloads the ~280 MB `apache-hive-3.1.3-bin.tar.gz` archive directly from Apache.
+2. Extracts it to `F:\apache-hive-3.1.3-bin` using native Windows `tar`.
+3. Auto-deletes Hive's legacy `guava-19.0.jar` to prevent JVM crashes.
+4. Auto-copies Hadoop's modern `guava-27.0-jre.jar` into Hive's `lib/` directory.
+5. Downloads the missing `commons-collections.jar` dependency that Hive needs to boot.
+
+Once completed, you can move on to the **How to Run** section!
+
+---
+
+## 🚀 How to Run
 
 1. Make sure your Hadoop NameNode and DataNode are running.
 2. Execute the wrapper script:
