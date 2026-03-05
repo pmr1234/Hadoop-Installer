@@ -119,3 +119,31 @@ CREATE TABLE employee (id INT, job STRING);
    `java -cp "%CP%" org.apache.hadoop.hive.cli.CliDriver -f hive_queries.hql`
 3. Change `hive_queries.hql` to `my_queries.hql` and save the script!
 4. Double-click `run_hive.cmd` and watch your custom queries execute autonomously!
+
+---
+
+## 🧠 How Hive Actually Works (Architecture & Hadoop Integration)
+Apache Hive acts as a data warehouse infrastructure built on top of Hadoop. It facilitates reading, writing, and managing massive datasets residing in distributed storage (HDFS) via **SQL (HiveQL)**.
+
+When you type a query like `SELECT AVG(marks) FROM students;`, here is exactly what happens under the hood:
+
+### 1. The Execution Pipeline
+- **User Interface / CLI:** You enter the query into the interactive `hive>` shell.
+- **Driver & Compiler:** The internal Hive Driver receives the query and sends it to the Compiler. The Compiler checks the syntax and queries the **Metastore** to verify that the table actually exists.
+- **Metastore Database:** This is the "brain" of Hive (we used **Apache Derby** in our experiment). The Metastore doesn't store the actual data (like the student names); instead, it stores the *schema* (the blueprints, table names, column types, and HDFS file paths).
+- **Execution Engine:** If the query is valid, the Compiler generates an Execution Plan (Directed Acyclic Graph) and submits it to the Execution Engine.
+- **MapReduce Translation:** The Engine translates your simple SQL command into a highly complex, optimized Java MapReduce job and sends it to **YARN** (Hadoop's resource manager).
+- **HDFS Processing:** YARN executes the Mappers and Reducers across your cluster, pulling the raw data from the HDFS blocks (e.g., your `students.csv`).
+- **Result Delivery:** The final reduced analytical output is sent back up the chain and printed to your screen.
+
+### 2. Internal vs. External Tables
+When creating a table in Hive, you must decide how Hive will manage the underlying raw data file:
+- **Internal (Managed) Tables:** Hive takes full physical ownership of the data. When you load a `.csv` file, Hive physically *moves* it into its own HDFS folder (e.g., `/user/hive/warehouse`). If you run `DROP TABLE students;`, Hive deletes BOTH the schema from its Metastore AND the actual `.csv` file from HDFS. Your data is gone forever!
+- **External Tables:** You put the data in HDFS yourself, and simply tell Hive to "point" its schema at that folder using the `LOCATION` command. If you run `DROP TABLE students;`, Hive only deletes the blueprint from its Metastore. The actual data file sits safely untouched in HDFS!
+
+### 3. Data Visualization in Hadoop via Hive (Schema-On-Read)
+Hadoop HDFS is historically blind. It just sees blocks of raw bytes (0s and 1s). It has no concept of rows, columns, names, or integers. Hive acts as the **Visualizer / Schema-On-Read** layer for Hadoop:
+
+Unlike traditional SQL databases (like Oracle or MySQL) which rigidly enforce strict rules *before* you insert data (Schema-On-Write), Hive lets you dump raw, dirty `csv` files into HDFS immediately. It only applies the "table structure" at the exact moment you run a `SELECT` query.
+
+Because Hive seamlessly creates this structured visualization layer, modern Business Intelligence (BI) tools (like Tableau or PowerBI) can connect directly to Hive via JDBC. To the BI tool, Hadoop just looks like a massive standard relational database!
