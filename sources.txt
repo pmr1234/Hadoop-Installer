@@ -1,0 +1,6 @@
+f:\vs code v2\vs-code-v2\wc\src\FrequencyDriver.java
+f:\vs code v2\vs-code-v2\wc\src\FrequencyMapper.java
+f:\vs code v2\vs-code-v2\wc\src\FrequencyReducer.java
+f:\vs code v2\vs-code-v2\wc\src\WordCountDriver.java
+f:\vs code v2\vs-code-v2\wc\src\WordCountMapper.java
+f:\vs code v2\vs-code-v2\wc\src\WordCountReducer.java

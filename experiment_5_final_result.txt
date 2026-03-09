@@ -1,0 +1,8 @@
+Logistic Regression and K-Means algorithms were successfully implemented using Apache Spark MLlib.
+The classification and clustering models were trained and verified, demonstrating accurate predictions and effective data grouping.
+
+REFERENCES:
+1. Spark MLlib Guide: https://spark.apache.org/docs/latest/ml-guide.html
+2. Logistic Regression: https://spark.apache.org/docs/latest/ml-classification-regression.html#logistic-regression
+3. K-Means Clustering: https://spark.apache.org/docs/latest/ml-clustering.html#k-means
+4. PySpark API: https://spark.apache.org/docs/latest/api/python/reference/index.html

@@ -4,6 +4,12 @@ This project implements the "Word Count & File Processing" MapReduce assignment 
 1. **Word Count**: Counts the frequency of all words in an input text file.
 2. **Group By Frequency**: Takes the output of the Word Count job, and groups all words that have the exact same frequency, sorted by length/occurrence.
 
+## 📦 How to Clone this Specific Experiment
+To prevent different experiments from getting mixed up, this repository is organized using Git Tags. You can download *only* this exact WordCount experiment code by running:
+```bash
+git clone --branch v2.0-wordcount https://github.com/pmr1234/Hadoop-Installer.git
+```
+
 ## Structure
 - `wc/src/`: Contains the MapReduce Mapper, Reducer, and Driver `.java` files for both tasks.
 - `wc/classes/`: (Auto-generated) Contains the compiled `.class` binaries.
