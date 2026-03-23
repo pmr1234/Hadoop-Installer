@@ -46,27 +46,31 @@ feature_df = clean_df.select(
 feature_df.printSchema()"""),
     
     new_markdown_cell("### Step 5: Feature Engineering & Step 6: Data Analytics"),
-    new_code_cell("""from pyspark.sql.functions import to_date, avg
+    new_code_cell("""from pyspark.sql.functions import to_date, avg, count
 
-# Average Fare Amount Per Day
+# Daily Aggregations for Power BI Dashboards
 daily_avg_fare = feature_df.withColumn(
     "pickup_date",
     to_date("pickup_datetime")
 ).groupBy("pickup_date") \\
-.agg(avg("fare_amount").alias("avg_fare"))
+.agg(
+    avg("fare_amount").alias("avg_fare"),
+    count("*").alias("total_trips"),
+    avg("trip_distance").alias("avg_distance")
+)
 
 daily_avg_fare.show(5)"""),
     
     new_markdown_cell("### Step 7: Store Processed Data (Export for Power BI)\nWe convert the grouped Spark DataFrame to a Pandas DataFrame to dump it natively as a single static CSV for Power BI."),
     new_code_cell("""import os
 
-# Create temp output directory natively if missing
-if not os.path.exists("C:/temp"):
-    os.makedirs("C:/temp", exist_ok=True)
+# Create local output directory natively if missing
+if not os.path.exists("output"):
+    os.makedirs("output", exist_ok=True)
 
 pdf = daily_avg_fare.toPandas()
-pdf.to_csv("C:/temp/daily_avg_fare.csv", index=False)
-print("Data successfully written to output folder (C:/temp/daily_avg_fare.csv)")""")
+pdf.to_csv("output/daily_avg_fare.csv", index=False)
+print("Data successfully written to output folder (output/daily_avg_fare.csv)")""")
 ]
 
 nb['cells'] = cells

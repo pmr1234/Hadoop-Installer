@@ -6,16 +6,9 @@ print("=========================================================")
 print("  Experiment 12: Big Data Processing Pipeline")
 print("=========================================================")
 
-# Ensure C:/temp geometry exists
-OUTPUT_DIR = "C:/temp"
-if not os.path.exists(OUTPUT_DIR):
-    print(f"[INFO] Creating output directory at {OUTPUT_DIR}...")
-    try:
-        os.makedirs(OUTPUT_DIR)
-    except PermissionError:
-        print(f"[WARN] Failed to create {OUTPUT_DIR} due to permissions. Defaulting to local ./temp folder.")
-        OUTPUT_DIR = "./temp"
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
+# Ensure local output directory exists securely
+OUTPUT_DIR = "output"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 OUTPUT_FILE = f"{OUTPUT_DIR}/daily_avg_fare.csv"
 
@@ -56,11 +49,17 @@ feature_df.printSchema()
 
 # 5. Feature Engineering / Data Analytics
 print("\n[5/7] Grouping Daily Fare Aggregations...")
+from pyspark.sql.functions import count
+
 daily_avg_fare = feature_df.withColumn(
     "pickup_date",
     to_date("pickup_datetime")
 ).groupBy("pickup_date") \
-.agg(avg("fare_amount").alias("avg_fare"))
+.agg(
+    avg("fare_amount").alias("avg_fare"),
+    count("*").alias("total_trips"),
+    avg("trip_distance").alias("avg_distance")
+)
 
 print("-> Aggregation Results:")
 daily_avg_fare.show(5)

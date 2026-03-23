@@ -8,6 +8,10 @@ echo   Bootstrapping PySpark Power BI Pipeline
 echo ===========================================
 
 echo.
+echo [0/3] Validating Python Dependencies...
+pip install -q pyspark nbformat pandas jupyter findspark
+
+echo.
 echo [1/3] Synthesizing Mock NYC Taxi Dataset...
 python generate_dataset.py
 
@@ -21,6 +25,6 @@ python run_pipeline.py
 
 echo.
 echo ==============================================================
-echo [READY] Open Power BI Desktop and import C:/temp/daily_avg_fare.csv!
+echo [READY] Open Power BI Desktop and import Spark_PowerBI_Experiment/output/daily_avg_fare.csv!
 echo ==============================================================
 pause
